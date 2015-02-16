@@ -1,5 +1,7 @@
+
 module Repository
-  module Base
-    VERSION = "0.0.1"
+  # Base class for Repository in Data Mapper pattern.
+  class Base
+    VERSION = '0.0.1'
   end
 end
