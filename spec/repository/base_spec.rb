@@ -11,6 +11,7 @@ module Forwardable
 end
 
 describe Repository::Base do
+  let(:all_dao_records) { [] }
   let(:save_successful) { true }
   let(:test_dao) do
     ret = Class.new do
@@ -19,6 +20,10 @@ describe Repository::Base do
 
       def initialize(attribs = {})
         @attributes = attribs
+      end
+
+      def self.all
+        @all_records.to_a # silence RuboCop Style/TrivialAccessors cop
       end
 
       def save
@@ -31,13 +36,15 @@ describe Repository::Base do
       end
     end
     ret.instance_variable_set :@save_flag, save_successful
+    ret.instance_variable_set :@all_records, all_dao_records
     ret
   end
   let(:test_factory) do
     Class.new do
-      def self.create(_record)
-        ap [:spec_27, "WE'RE HERE!!!"]
-        'the record'
+      def self.create(record)
+        ret = {}
+        record.to_h.each { |key, value| ret[key.to_sym] = value }
+        FancyOpenStruct.new ret
       end
     end
   end
@@ -122,4 +129,27 @@ describe Repository::Base do
       end # context 'for an unsuccessful save'
     end # describe 'returns a StoreResult with'
   end # describe 'has an #add method that'
+
+  describe 'has an #all method that' do
+    let(:obj) { described_class.new dao: test_dao, factory: test_factory }
+
+    context 'for a repository without records' do
+      it 'returns an empty array' do
+        actual = obj.all
+        expect(actual).to respond_to :to_ary
+        expect(actual).to be_empty
+      end
+    end # context 'for a repository without records'
+
+    context 'for a repository with records' do
+      let(:all_dao_records) { [{ attr1: 'value1' }, { attr1: 'value2' }] }
+
+      it 'returns an Array with one entry for each record in the Repository' do
+        actual = obj.all
+        expect(actual).to respond_to :to_ary
+        expect(actual.count).to eq all_dao_records.count
+        actual.each { |r| expect(all_dao_records).to include r.to_h }
+      end
+    end # context 'for a repository with records'
+  end # describe 'has an #all method that'
 end

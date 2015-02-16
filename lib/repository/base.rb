@@ -26,6 +26,10 @@ module Repository
       RecordSaver.new(record).result
     end
 
+    def all
+      dao.all.map { |record| factory.create record }
+    end
+
     private
 
     # supporting #initialize
