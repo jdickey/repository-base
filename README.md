@@ -1,6 +1,11 @@
 # Repository::Base
 
 [![Join the chat at https://gitter.im/jdickey/repository-base](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jdickey/repository-base?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Gem Version](https://badge.fury.io/rb/repository-base.svg)](http://badge.fury.io/rb/repository-base)
+[![Code Climate](https://codeclimate.com/github/jdickey/repository-base.png)](https://codeclimate.com/github/jdickey/repository-base)
+[ ![Codeship Status for jdickey/repository-base](https://codeship.com/projects/2e3dfaa0-8950-0132-3d83-4e5a44c3ddcb/status?branch=master)](https://codeship.com/projects/59675)
+[![security](https://hakiri.io/github/jdickey/repository-base/master.svg)](https://hakiri.io/github/jdickey/repository-base/master)
+[![Dependency Status](https://gemnasium.com/jdickey/repository-base.svg)](https://gemnasium.com/jdickey/repository-base)
 
 This Gem supplies a class, `Repository::Base`, which can be used as a base class
 for Repositories in an application that uses the
