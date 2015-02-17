@@ -1,9 +1,7 @@
 
 require 'repository/base/version'
 
-require 'repository/base/internals/record_saver'
-require 'repository/base/internals/record_updater'
-require 'repository/base/internals/slug_finder'
+require 'repository/base/internals/internals'
 
 module Repository
   # Base class for Repository in Data Mapper pattern.
@@ -32,10 +30,7 @@ module Repository
     end
 
     def delete(identifier)
-      result = find_by_slug identifier
-      return result unless result.success?
-      dao.delete identifier
-      result
+      RecordDeleter.new(identifier, dao).delete
     end
 
     def find_by_slug(slug)
