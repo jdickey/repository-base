@@ -31,6 +31,13 @@ module Repository
       dao.all.map { |record| factory.create record }
     end
 
+    def delete(identifier)
+      result = find_by_slug identifier
+      return result unless result.success?
+      dao.delete identifier
+      result
+    end
+
     def find_by_slug(slug)
       SlugFinder.new(slug, dao).find
     end
