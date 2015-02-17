@@ -2,6 +2,7 @@
 require 'repository/base/version'
 
 require 'repository/base/internals/record_saver'
+require 'repository/base/internals/slug_finder'
 
 module Repository
   # Base class for Repository in Data Mapper pattern.
@@ -28,6 +29,10 @@ module Repository
 
     def all
       dao.all.map { |record| factory.create record }
+    end
+
+    def find_by_slug(slug)
+      SlugFinder.new(slug, dao).find
     end
 
     private
