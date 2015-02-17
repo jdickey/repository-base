@@ -26,6 +26,15 @@ describe Repository::Base do
         @all_records.to_a # silence RuboCop Style/TrivialAccessors cop
       end
 
+      def self.where(conditions = {})
+        ret = @all_records.to_a.select do |record|
+          conditions.delete_if do |field, value|
+            record.attributes[field.to_sym] == value
+          end.empty?
+        end
+        ret
+      end
+
       def save
         self.class.instance_variable_get(:@save_flag).tap do |flag|
           unless flag
@@ -152,4 +161,48 @@ describe Repository::Base do
       end
     end # context 'for a repository with records'
   end # describe 'has an #all method that'
+
+  describe 'has a #find_by_slug method' do
+    let(:entity) { Struct.new(:attributes).new entity_attributes }
+    let(:entity_attributes) { { foo: 'bar', slug: 'the-slug' } }
+    let(:obj) { described_class.new dao: test_dao, factory: test_factory }
+    let(:result) { obj.find_by_slug entity.attributes[:slug] }
+
+    context 'when called using the slug for an existing record' do
+      describe 'returns a result that' do
+        let(:all_dao_records) { [entity] }
+
+        it 'has no errors' do
+          expect(result.errors).to be_empty
+        end
+
+        it 'is successful' do
+          expect(result).to be_success
+        end
+
+        it 'has an entity field matching the original entity attributes' do
+          expect(result.entity.attributes).to eq entity_attributes
+        end
+      end # describe 'returns a result that'
+    end # context 'when called using the slug for an existing record'
+
+    context 'when called using a slug that matches no existing record' do
+      describe 'returns a result that' do
+        it 'is not successful' do
+          expect(result).not_to be_success
+        end
+
+        it 'has an entity field with a nil value' do
+          expect(result.entity).to be nil
+        end
+
+        it 'reports a single error, stating that the slug was not found' do
+          expect(result.errors.count).to eq 1
+          message = "A record with 'slug=the-slug' was not found."
+          expected = { field: 'base', message: message }
+          expect(result.errors.first).to eq expected
+        end
+      end # describe 'returns a result that'
+    end # context 'when called using a slug that matches no existing record'
+  end # describe 'has a #find_by_slug method'
 end
