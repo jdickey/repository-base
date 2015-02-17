@@ -26,6 +26,17 @@ describe Repository::Base do
         @all_records.to_a # silence RuboCop Style/TrivialAccessors cop
       end
 
+      def self.delete(identifier)
+        record = @all_records.detect { |r| r.attributes[:slug] == identifier }
+        if record
+          @all_records.delete record
+          1
+        else
+          errors.add :slug, "not found: '#{identifier}'"
+          0
+        end
+      end
+
       def self.where(conditions = {})
         ret = @all_records.to_a.select do |record|
           conditions.delete_if do |field, value|
@@ -164,6 +175,53 @@ describe Repository::Base do
     end # context 'for a repository with records'
   end # describe 'has an #all method that'
 
+  describe 'has a #delete method that' do
+    let(:entity) { OpenStruct.new attributes: entity_attributes }
+    let(:entity_attributes) { { foo: 'bar', slug: 'the-slug' } }
+    let(:result) { obj.delete entity.attributes[:slug] }
+
+    before :each do
+      obj.add entity
+    end
+
+    context 'for an existing record, returns a StoreResult that' do
+      let(:all_dao_records) { [entity] }
+      let(:save_successful) { true }
+
+      it 'is successful' do
+        expect(result).to be_success
+      end
+
+      it 'has an entity matching the target' do
+        expect(result.entity).to eq entity
+      end
+
+      it 'reports no errors' do
+        expect(result.errors).to be_empty
+      end
+    end # context 'for an existing record, returns a StoreResult that'
+
+    context 'for a nonexistent record, returns a StoreResult that' do
+      let(:all_dao_records) { [] }
+      let(:save_successful) { false }
+
+      it 'is not successful' do
+        expect(result).not_to be_success
+      end
+
+      it 'has an #entity method returning nil' do
+        expect(result.entity).to be nil
+      end
+
+      it 'reports one error: that the target slug was not found' do
+        expect(result.errors.count).to eq 1
+        error = result.errors.first
+        expect(error[:field].to_s).to eq 'slug'
+        expect(error[:message]).to eq "not found: '#{entity.attributes[:slug]}'"
+      end
+    end # context 'for a nonexistent record, returns a StoreResult that'
+  end # describe 'has a #delete method that'
+
   describe 'has a #find_by_slug method' do
     let(:entity) { Struct.new(:attributes).new entity_attributes }
     let(:entity_attributes) { { foo: 'bar', slug: 'the-slug' } }
@@ -199,8 +257,8 @@ describe Repository::Base do
 
         it 'reports a single error, stating that the slug was not found' do
           expect(result.errors.count).to eq 1
-          message = "A record with 'slug=the-slug' was not found."
-          expected = { field: 'base', message: message }
+          message = "not found: '#{entity_attributes[:slug]}'"
+          expected = { field: 'slug', message: message }
           expect(result.errors.first).to eq expected
         end
       end # describe 'returns a result that'

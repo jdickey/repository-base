@@ -28,7 +28,7 @@ module Repository
 
         def errors_for_slug
           errors = ActiveModel::Errors.new dao
-          errors.add :base, "A record with 'slug=#{slug}' was not found."
+          errors.add :slug,  "not found: '#{slug}'"
           errors
         end
 

@@ -1,9 +1,7 @@
 
 require 'repository/base/version'
 
-require 'repository/base/internals/record_saver'
-require 'repository/base/internals/record_updater'
-require 'repository/base/internals/slug_finder'
+require 'repository/base/internals/internals'
 
 module Repository
   # Base class for Repository in Data Mapper pattern.
@@ -29,6 +27,10 @@ module Repository
 
     def all
       dao.all.map { |record| factory.create record }
+    end
+
+    def delete(identifier)
+      RecordDeleter.new(identifier, dao).delete
     end
 
     def find_by_slug(slug)
