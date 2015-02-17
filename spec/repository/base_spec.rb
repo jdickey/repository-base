@@ -43,6 +43,11 @@ describe Repository::Base do
           end
         end
       end
+
+      def update
+        ap [:spec_48, 'In update']
+        StoreResult::Success.new 'succeeded'
+      end
     end
     ret.instance_variable_set :@save_flag, save_successful
     ret.instance_variable_set :@all_records, all_dao_records
@@ -57,6 +62,7 @@ describe Repository::Base do
       end
     end
   end
+  let(:obj) { described_class.new dao: test_dao, factory: test_factory }
 
   it 'has a version number' do
     expect(Repository::Base::VERSION).not_to be nil
@@ -82,8 +88,6 @@ describe Repository::Base do
   end # describe 'instantiation'
 
   describe 'has an #add method that' do
-    let(:obj) { described_class.new dao: test_dao, factory: test_factory }
-
     describe 'takes one argument' do
       it 'that is required' do
         method = obj.method :add
@@ -140,8 +144,6 @@ describe Repository::Base do
   end # describe 'has an #add method that'
 
   describe 'has an #all method that' do
-    let(:obj) { described_class.new dao: test_dao, factory: test_factory }
-
     context 'for a repository without records' do
       it 'returns an empty array' do
         actual = obj.all
@@ -165,7 +167,6 @@ describe Repository::Base do
   describe 'has a #find_by_slug method' do
     let(:entity) { Struct.new(:attributes).new entity_attributes }
     let(:entity_attributes) { { foo: 'bar', slug: 'the-slug' } }
-    let(:obj) { described_class.new dao: test_dao, factory: test_factory }
     let(:result) { obj.find_by_slug entity.attributes[:slug] }
 
     context 'when called using the slug for an existing record' do
@@ -205,4 +206,72 @@ describe Repository::Base do
       end # describe 'returns a result that'
     end # context 'when called using a slug that matches no existing record'
   end # describe 'has a #find_by_slug method'
+
+  describe 'has an #update method that' do
+    let(:entity) do
+      ret = Struct.new(:attributes) do
+        attr_accessor :update_successful
+        attr_reader :errors
+
+        def update(new_attributes)
+          if update_successful
+            new_attributes.to_h.each { |k, v| attributes[k.to_sym] = v }
+          else
+            @errors = {
+              new_attributes.keys.first.to_sym => 'is invalid'
+            }
+          end
+          update_successful
+        end
+      end.new entity_attributes
+      ret.update_successful = update_success
+      ret
+    end
+    let(:entity_attributes) { { foo: 'bar', slug: 'the-slug' } }
+    let(:new_attrs) { { foo: 'quux' } }
+    let(:result) { obj.update entity.attributes[:slug], new_attrs }
+
+    context 'for a valid update' do
+      let(:all_dao_records) { [entity] }
+      let(:update_success) { true }
+
+      describe 'it returns a result that' do
+        it 'is successful' do
+          expect(result).to be_success
+        end
+
+        it 'has no errors' do
+          expect(result.errors).to be_empty
+        end
+
+        it 'has an entity that contains the updated fields' do
+          new_attrs.each_key do |field|
+            expect(result.entity.attributes[field]).to eq new_attrs[field]
+          end
+        end
+      end # describe 'it returns a result that'
+    end # context 'for a valid update'
+
+    context 'for a failed update' do
+      let(:all_dao_records) { [entity] }
+      let(:update_success) { false }
+
+      describe 'it returns a result that' do
+        it 'is not successful' do
+          expect(result).not_to be_success
+        end
+
+        it 'has an #entity method that returns nil' do
+          expect(result.entity).to be nil
+        end
+
+        it 'an #errors method that returns the expected error-pair hashes' do
+          # from entity#update; see above
+          expect(result.errors).to respond_to :to_hash
+          expect(result.errors.keys.count).to eq 1
+          expect(result.errors[entity_attributes.keys.first]).to eq 'is invalid'
+        end
+      end # describe 'it returns a result that'
+    end # context 'for a failed update'
+  end # describe 'has an #update method that'
 end

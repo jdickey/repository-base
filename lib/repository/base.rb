@@ -2,6 +2,7 @@
 require 'repository/base/version'
 
 require 'repository/base/internals/record_saver'
+require 'repository/base/internals/record_updater'
 require 'repository/base/internals/slug_finder'
 
 module Repository
@@ -13,7 +14,6 @@ module Repository
     private_constant :Internals
 
     include Internals
-    include Repository::Support
     attr_reader :dao, :factory
 
     def initialize(factory:, dao:)
@@ -33,6 +33,10 @@ module Repository
 
     def find_by_slug(slug)
       SlugFinder.new(slug, dao).find
+    end
+
+    def update(identifier, updated_attrs)
+      RecordUpdater.new(identifier, updated_attrs, dao).update
     end
 
     private
