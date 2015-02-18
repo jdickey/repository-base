@@ -7,14 +7,23 @@ module Repository
   class Base
     # Internal support code exclusively used by Repository::Base
     module Internals
-      # Stows away details of reporting save success/failure.
+      # Reports on the success or failure of saving a *DAO record*, using the
+      # `Repository::Support::StoreResult` instance returned from `#result`.
+      # @since 0.0.1
       class RecordSaver
         include Repository::Support
 
+        # Sets instance variable(s) on a new `RecordSaver` instanace.
+        # @param record DAO record to attempt to save.
         def initialize(record)
           @record = record
         end
 
+        # Command-pattern method returning indication of success or failure of
+        # attempt to save record.
+        # @return Repository::Support::StoreResult
+        # @see #failed_result
+        # @see #successful_result
         def result
           if record.save
             successful_result
@@ -27,6 +36,8 @@ module Repository
 
         attr_reader :record
 
+        # Represent error data sourced from an `ActiveModel::Errors` object as
+        # an Array of `{field: 'field', message: 'message'}` hashes.
         def error_hashes
           ErrorFactory.create record.errors
         end

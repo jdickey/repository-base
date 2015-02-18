@@ -1,0 +1,5 @@
+--markup-provider=kramdown
+--markup=markdown
+--verbose
+--private
+

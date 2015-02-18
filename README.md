@@ -6,6 +6,7 @@
 [ ![Codeship Status for jdickey/repository-base](https://codeship.com/projects/ae57fed0-969f-0132-1faa-76c54edd661d/status?branch=master)](https://codeship.com/projects/63061)
 [![security](https://hakiri.io/github/jdickey/repository-base/master.svg)](https://hakiri.io/github/jdickey/repository-base/master)
 [![Dependency Status](https://gemnasium.com/jdickey/repository-base.svg)](https://gemnasium.com/jdickey/repository-base)
+[![Inline docs](http://inch-ci.org/github/jdickey/repository-base.svg?style=shields)](http://inch-ci.org/github/jdickey/repository-base)
 
 This Gem supplies a class, `Repository::Base`, which can be used as a base class
 for Repositories in an application that uses the
