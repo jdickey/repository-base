@@ -29,4 +29,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'awesome_print'
   spec.add_development_dependency 'pry-byebug'
   spec.add_development_dependency 'fancy-open-struct'
+  spec.add_development_dependency 'yard'
+  spec.add_development_dependency 'kramdown' # for YARD Markdown docs
 end
