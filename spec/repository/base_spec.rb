@@ -68,8 +68,8 @@ describe Repository::Base do
     Class.new do
       def self.create(record)
         ret = {}
-        record.to_h.each { |key, value| ret[key.to_sym] = value }
-        FancyOpenStruct.new ret
+        record.attributes.each { |key, value| ret[key.to_sym] = value }
+        FancyOpenStruct.new ret.merge(attributes: ret)
       end
     end
   end
@@ -126,9 +126,15 @@ describe Repository::Base do
           expect(result).to be_success
         end
 
-        it 'an #entity method returning entity with the expected attributes' do
-          expect(result.entity.attributes.to_h).to eq entity.attributes.to_h
-        end
+        describe 'an #entity method which returns an entity that' do
+          it 'is an entity, not a record' do
+            expect(result.entity).not_to respond_to :save
+          end
+
+          it 'has the correct attributes' do
+            expect(result.entity.attributes).to eq entity.attributes
+          end
+        end # describe 'an #entity method which returns an entity that'
       end # context 'for a successful save'
 
       context 'for an unsuccessful save' do
@@ -164,13 +170,20 @@ describe Repository::Base do
     end # context 'for a repository without records'
 
     context 'for a repository with records' do
-      let(:all_dao_records) { [{ attr1: 'value1' }, { attr1: 'value2' }] }
+      let(:all_dao_records) do
+        data_items = [{ attr1: 'value1' }, { attr1: 'value2' }]
+        [].tap do |ret|
+          data_items.each do |item|
+            ret.push FancyOpenStruct.new(item.merge(attributes: item))
+          end
+        end
+      end
 
       it 'returns an Array with one entry for each record in the Repository' do
         actual = obj.all
         expect(actual).to respond_to :to_ary
         expect(actual.count).to eq all_dao_records.count
-        actual.each { |r| expect(all_dao_records).to include r.to_h }
+        actual.each { |r| expect(all_dao_records).to include r }
       end
     end # context 'for a repository with records'
   end # describe 'has an #all method that'

@@ -2,6 +2,7 @@
 require 'repository/base/version'
 
 require 'repository/base/internals/internals'
+require 'repository/support/store_result'
 
 # The `Repository` module functions as a namespace for implementing the
 # repository logic in a [Data Mapper pattern](http://martinfowler.com/eaaCatalog/dataMapper.html)
@@ -19,8 +20,8 @@ module Repository
     module Internals
     end
     private_constant :Internals
-
     include Internals
+
     attr_reader :dao, :factory
 
     # Initialise a new `Repository::Base` instance.
@@ -40,7 +41,8 @@ module Repository
     #     information about the success or failure of an action.
     def add(entity)
       record = dao.new filtered_attributes_for(entity)
-      RecordSaver.new(record).result
+      result = RecordSaver.new(record).result
+      ResultTransformer.new(result, factory).transform
     end
 
     # Return an array of entities matching all records currently in the
