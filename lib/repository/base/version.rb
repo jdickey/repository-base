@@ -4,6 +4,6 @@ module Repository
   class Base
     # Gem version, following [RubyGems.org](https://rubygems.org) and
     # [SemVer](http://semver.org/) conventions.
-    VERSION = '0.1.1'
+    VERSION = '0.1.2'
   end
 end
