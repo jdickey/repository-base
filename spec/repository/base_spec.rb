@@ -56,7 +56,6 @@ describe Repository::Base do
       end
 
       def update
-        ap [:spec_48, 'In update']
         StoreResult::Success.new 'succeeded'
       end
     end
@@ -280,9 +279,22 @@ describe Repository::Base do
 
   describe 'has an #update method that' do
     let(:entity) do
-      ret = Struct.new(:attributes) do
+      # Class that emulates Rails' models' `#attributes` behaviour, where keys
+      # in the attribute hash are also used to retrofit attribute readers and
+      # updaters onto the model class. We *could* have instead used
+      # [`ActiveAttr::Attributes`](https://github.com/cgriego/active_attr#attributes)
+      # but oh well... this was adapted from *much* simpler (and broken) earlier
+      # code and, by the time I realised I *could* pull this off the shelf, I
+      # already had it working. #sosueme
+      class EntityClass
         attr_accessor :update_successful
-        attr_reader :errors
+        attr_reader :attributes, :errors
+
+        def initialize(attributes = {})
+          @attributes = attributes
+          @update_successful = true
+          @errors = {}
+        end
 
         def update(new_attributes)
           if update_successful
@@ -294,9 +306,43 @@ describe Repository::Base do
           end
           update_successful
         end
-      end.new entity_attributes
-      ret.update_successful = update_success
-      ret
+
+        def method_missing(method_sym, *arguments, &block)
+          method_or_type = key_for?(method_sym)
+          case method_or_type
+          when :none
+            super
+          when :reader
+            attributes[method_sym]
+          else
+            attributes[method_or_type] = arguments.first
+          end
+        end
+
+        def respond_to?(method_sym, include_private = false)
+          return true unless key_for?(method_sym) == :none
+          super
+        end
+
+        private
+
+        def key_for?(key_sym)
+          if attributes.key? key_sym
+            :reader
+          else
+            setter_for_or_none(key_sym)
+          end
+        end
+
+        def setter_for_or_none(key)
+          match = key.to_s.match(/(\S+?)=/)
+          has_setter = match && attributes.key?(match[1].to_sym)
+          has_setter ? match[1].to_sym : :none
+        end
+      end
+      EntityClass.new(entity_attributes).tap do |ret|
+        ret.update_successful = update_success
+      end
     end
     let(:entity_attributes) { { foo: 'bar', slug: 'the-slug' } }
     let(:new_attrs) { { foo: 'quux' } }
@@ -315,11 +361,17 @@ describe Repository::Base do
           expect(result.errors).to be_empty
         end
 
-        it 'has an entity that contains the updated fields' do
-          new_attrs.each_key do |field|
-            expect(result.entity.attributes[field]).to eq new_attrs[field]
+        describe 'an #entity method which returns an entity that' do
+          it 'is an entity, not a record' do
+            expect(result.entity).not_to respond_to :save
           end
-        end
+
+          it 'has the correct attributes' do
+            # Using a FOS to match the stubbed factory output.
+            expected = FancyOpenStruct.new entity_attributes.merge(new_attrs)
+            expect(result.entity.attributes).to eq expected
+          end
+        end # describe 'an #entity method which returns an entity that'
       end # describe 'it returns a result that'
     end # context 'for a valid update'
 

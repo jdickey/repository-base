@@ -17,10 +17,13 @@ module Repository
         # @param updated_attrs [Hash] Attributes to be updated.
         # @param dao Data Access Object implements persistence without business
         #            logic.
-        def initialize(identifier, updated_attrs, dao)
+        # @param factory Class whose `#create` method converts a DAO record to
+        #                an entity.
+        def initialize(identifier:, updated_attrs:, dao:, factory:)
           @identifier = identifier
           @updated_attrs = updated_attrs
           @dao = dao
+          @factory = factory
         end
 
         # Command-pattern method to update a record in the persistence layer,
@@ -34,14 +37,15 @@ module Repository
 
         private
 
-        attr_reader :dao, :identifier, :record, :updated_attrs
+        attr_reader :dao, :factory, :identifier, :record, :updated_attrs
 
         def failed_result # :nodoc:
           StoreResult::Failure.new record.errors
         end
 
         def successful_result # :nodoc:
-          StoreResult::Success.new record
+          entity = factory.create record
+          StoreResult::Success.new entity
         end
       end # class Repository::Base::Internals::RecordUpdater
     end

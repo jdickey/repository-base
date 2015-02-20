@@ -86,7 +86,8 @@ module Repository
     #   result = user_repo.update @user.slug, params[:user_params]
     #   @user = result.entity if result.success?
     def update(identifier, updated_attrs)
-      RecordUpdater.new(identifier, updated_attrs, dao).update
+      RecordUpdater.new(identifier: identifier, updated_attrs: updated_attrs,
+                        dao: dao, factory: factory).update
     end
 
     private
