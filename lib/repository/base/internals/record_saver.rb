@@ -15,8 +15,9 @@ module Repository
 
         # Sets instance variable(s) on a new `RecordSaver` instanace.
         # @param record DAO record to attempt to save.
-        def initialize(record)
+        def initialize(record:, factory:)
           @record = record
+          @factory = factory
         end
 
         # Command-pattern method returning indication of success or failure of
@@ -34,7 +35,7 @@ module Repository
 
         private
 
-        attr_reader :record
+        attr_reader :factory, :record
 
         # Represent error data sourced from an `ActiveModel::Errors` object as
         # an Array of `{field: 'field', message: 'message'}` hashes.
@@ -47,7 +48,8 @@ module Repository
         end
 
         def successful_result
-          StoreResult::Success.new record
+          entity = factory.create record
+          StoreResult::Success.new entity
         end
       end # class Internals::RecordSaver
     end # module Repository::Base::Internals

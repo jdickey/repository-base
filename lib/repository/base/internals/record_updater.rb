@@ -31,7 +31,7 @@ module Repository
         # @return [Repository::Support::StoreResult]
         def update
           @record = dao.where(slug: identifier).first
-          return failed_result unless record.update(updated_attrs.to_h)
+          return failed_result unless @record.update(updated_attrs.to_h)
           successful_result
         end
 

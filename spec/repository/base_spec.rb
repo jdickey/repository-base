@@ -2,12 +2,30 @@
 require 'spec_helper'
 require 'active_model'
 
+require 'repository/support'
+
 # FIXME: Periodically try disabling this after updating to new release of
 #        ActiveModel and see if they've fixed the conflict w/stdlib Forwardable.
 #        This is per https://github.com/cequel/cequel/issues/193 - another epic
 #        ActiveFail.
 module Forwardable
   remove_method :delegate
+end
+
+# Test entity class; simply a wrapper around attributes and comparison of same.
+class BaseEntityClass
+  include Comparable
+  extend Repository::Support::TestAttributeContainer
+
+  init_empty_attribute_container
+
+  def initialize(attributes_in = {})
+    @attributes = attributes_in
+  end
+
+  def <=>(other)
+    attributes <=> other.attributes
+  end
 end
 
 describe Repository::Base do
@@ -66,9 +84,7 @@ describe Repository::Base do
   let(:test_factory) do
     Class.new do
       def self.create(record)
-        ret = {}
-        record.attributes.each { |key, value| ret[key.to_sym] = value }
-        FancyOpenStruct.new ret.merge(attributes: ret)
+        BaseEntityClass.new record.attributes
       end
     end
   end
@@ -115,7 +131,7 @@ describe Repository::Base do
     end # describe 'takes one argument'
 
     describe 'returns a StoreResult' do
-      let(:entity) { FancyOpenStruct.new attributes: { foo: true } }
+      let(:entity) { BaseEntityClass.new foo: true }
       let(:result) { obj.add entity }
 
       context 'for a successful save' do
@@ -170,25 +186,22 @@ describe Repository::Base do
 
     context 'for a repository with records' do
       let(:all_dao_records) do
-        data_items = [{ attr1: 'value1' }, { attr1: 'value2' }]
-        [].tap do |ret|
-          data_items.each do |item|
-            ret.push FancyOpenStruct.new(item.merge(attributes: item))
-          end
-        end
+        [
+          BaseEntityClass.new(attr1: 'value1'),
+          BaseEntityClass.new(attr1: 'value2')
+        ]
       end
 
       it 'returns an Array with one entry for each record in the Repository' do
         actual = obj.all
         expect(actual).to respond_to :to_ary
-        expect(actual.count).to eq all_dao_records.count
-        actual.each { |r| expect(all_dao_records).to include r }
+        expect(actual).to eq all_dao_records
       end
     end # context 'for a repository with records'
   end # describe 'has an #all method that'
 
   describe 'has a #delete method that' do
-    let(:entity) { OpenStruct.new attributes: entity_attributes }
+    let(:entity) { BaseEntityClass.new entity_attributes }
     let(:entity_attributes) { { foo: 'bar', slug: 'the-slug' } }
     let(:result) { obj.delete entity.attributes[:slug] }
 
@@ -205,7 +218,7 @@ describe Repository::Base do
       end
 
       it 'has an entity matching the target' do
-        expect(result.entity).to eq entity
+        expect(result.entity.attributes.to_h).to eq entity.attributes
       end
 
       it 'reports no errors' do
@@ -235,7 +248,7 @@ describe Repository::Base do
   end # describe 'has a #delete method that'
 
   describe 'has a #find_by_slug method' do
-    let(:entity) { Struct.new(:attributes).new entity_attributes }
+    let(:entity) { BaseEntityClass.new entity_attributes }
     let(:entity_attributes) { { foo: 'bar', slug: 'the-slug' } }
     let(:result) { obj.find_by_slug entity.attributes[:slug] }
 
@@ -279,65 +292,30 @@ describe Repository::Base do
 
   describe 'has an #update method that' do
     let(:entity) do
-      # Class that emulates Rails' models' `#attributes` behaviour, where keys
-      # in the attribute hash are also used to retrofit attribute readers and
-      # updaters onto the model class. We *could* have instead used
-      # [`ActiveAttr::Attributes`](https://github.com/cgriego/active_attr#attributes)
-      # but oh well... this was adapted from *much* simpler (and broken) earlier
-      # code and, by the time I realised I *could* pull this off the shelf, I
-      # already had it working. #sosueme
-      class EntityClass
+      # Class that provides a stubbed `#update` method that quacks enough like
+      # ActiveRecord's to be useful for testing, now that `Repository::Support`
+      # has this (presently) shiny new `TestAttributeContainer` module that
+      # makes the attribute-management finagling we need easier.
+      class EntityClass < BaseEntityClass
         attr_accessor :update_successful
-        attr_reader :attributes, :errors
+        attr_reader :errors
 
-        def initialize(attributes = {})
-          @attributes = attributes
+        def initialize(attributes_in = {})
+          super attributes_in
           @update_successful = true
           @errors = {}
         end
 
         def update(new_attributes)
           if update_successful
-            new_attributes.to_h.each { |k, v| attributes[k.to_sym] = v }
+            new_hash = attributes.merge new_attributes.to_h.symbolize_keys
+            @attributes = new_hash
           else
             @errors = {
               new_attributes.keys.first.to_sym => 'is invalid'
             }
           end
           update_successful
-        end
-
-        def method_missing(method_sym, *arguments, &block)
-          method_or_type = key_for?(method_sym)
-          case method_or_type
-          when :none
-            super
-          when :reader
-            attributes[method_sym]
-          else
-            attributes[method_or_type] = arguments.first
-          end
-        end
-
-        def respond_to?(method_sym, include_private = false)
-          return true unless key_for?(method_sym) == :none
-          super
-        end
-
-        private
-
-        def key_for?(key_sym)
-          if attributes.key? key_sym
-            :reader
-          else
-            setter_for_or_none(key_sym)
-          end
-        end
-
-        def setter_for_or_none(key)
-          match = key.to_s.match(/(\S+?)=/)
-          has_setter = match && attributes.key?(match[1].to_sym)
-          has_setter ? match[1].to_sym : :none
         end
       end
       EntityClass.new(entity_attributes).tap do |ret|
@@ -346,7 +324,9 @@ describe Repository::Base do
     end
     let(:entity_attributes) { { foo: 'bar', slug: 'the-slug' } }
     let(:new_attrs) { { foo: 'quux' } }
-    let(:result) { obj.update entity.attributes[:slug], new_attrs }
+    let(:result) do
+      obj.update identifier: entity.attributes[:slug], updated_attrs: new_attrs
+    end
 
     context 'for a valid update' do
       let(:all_dao_records) { [entity] }
@@ -367,8 +347,7 @@ describe Repository::Base do
           end
 
           it 'has the correct attributes' do
-            # Using a FOS to match the stubbed factory output.
-            expected = FancyOpenStruct.new entity_attributes.merge(new_attrs)
+            expected = entity_attributes.merge(new_attrs)
             expect(result.entity.attributes).to eq expected
           end
         end # describe 'an #entity method which returns an entity that'

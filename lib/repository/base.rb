@@ -41,8 +41,7 @@ module Repository
     #     information about the success or failure of an action.
     def add(entity)
       record = dao.new filtered_attributes_for(entity)
-      result = RecordSaver.new(record).result
-      ResultTransformer.new(result, factory).transform
+      RecordSaver.new(record: record, factory: factory).result
     end
 
     # Return an array of entities matching all records currently in the
@@ -61,7 +60,8 @@ module Repository
     #     information about the success or failure of an action.
     # @since 0.0.5
     def delete(identifier)
-      RecordDeleter.new(identifier, dao).delete
+      RecordDeleter.new(identifier: identifier, dao: dao, factory: factory)
+        .delete
     end
 
     # Find a record in the DAO and, on success, return a corresponding entity
@@ -73,7 +73,7 @@ module Repository
     #     information about the success or failure of an action.
     # @since 0.0.3
     def find_by_slug(slug)
-      SlugFinder.new(slug, dao).find
+      SlugFinder.new(slug: slug, dao: dao, factory: factory).find
     end
 
     # Update a record in the DAO corresponding to the specified identifier,
@@ -85,7 +85,7 @@ module Repository
     # @example
     #   result = user_repo.update @user.slug, params[:user_params]
     #   @user = result.entity if result.success?
-    def update(identifier, updated_attrs)
+    def update(identifier:, updated_attrs:)
       RecordUpdater.new(identifier: identifier, updated_attrs: updated_attrs,
                         dao: dao, factory: factory).update
     end

@@ -17,16 +17,20 @@ module Repository
         #                   for record to be deleted.
         # @param dao Data Access Object implements persistence without business
         #            logic.
-        def initialize(identifier, dao)
+        # @param factory Factory-pattern class to build an entity from an
+        #                existing DAO record.
+        def initialize(identifier:, dao:, factory:)
           @identifier = identifier
           @dao = dao
+          @factory = factory
         end
 
         # Command-pattern method returning indication of success or failure of
         # attempt to delete identified record.
         # @return Repository::Support::StoreResult
         def delete
-          result = SlugFinder.new(identifier, dao).find
+          finder = SlugFinder.new slug: identifier, dao: dao, factory: factory
+          result = finder.find
           return result unless result.success
           dao.delete identifier
           result
@@ -34,7 +38,7 @@ module Repository
 
         private
 
-        attr_reader :dao, :identifier
+        attr_reader :dao, :factory, :identifier
       end # class Repository::Base::Internals::RecordDeleter
     end
   end
