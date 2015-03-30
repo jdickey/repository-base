@@ -120,13 +120,31 @@ describe Repository::Base do
         expect(method.arity).to eq 1
       end
 
-      it 'with an #attributes method returning an Enumerable' do
-        arg = 'q'
-        message = %(undefined method `attributes' for "#{arg}":String)
-        expect { obj.add arg }.to raise_error NoMethodError, message
-        entity = Struct.new(:attributes).new arg
-        message = %(undefined method `reject' for "#{arg}":String)
-        expect { obj.add entity }.to raise_error NoMethodError, message
+      describe 'with an #attributes method that returns' do
+        it 'an Enumerable' do
+          arg = 'q'
+          message = /undefined method .attributes. .*/
+          expect { obj.add arg }.to raise_error NoMethodError, message
+          entity = Struct.new(:attributes).new arg
+          message = /undefined method .to_hash. .*/
+          expect { obj.add entity }.to raise_error NoMethodError, message
+        end
+
+        it 'an object with a #to_hash method' do
+          attributes_class = Class.new do
+            def to_hash
+              { q: 'a' }
+            end
+          end
+          entity = Class.new do
+            attr_reader :attributes
+
+            def initialize(attributes)
+              @attributes = attributes
+            end
+          end.new(attributes_class.new)
+          expect { obj.add entity }.not_to raise_error
+        end
       end
     end # describe 'takes one argument'
 

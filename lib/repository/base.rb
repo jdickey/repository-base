@@ -107,7 +107,7 @@ module Repository
     # supporting #add
 
     def filtered_attributes_for(entity) # :nodoc:
-      entity.attributes.reject { |k, _v| k == :errors }
+      entity.attributes.to_hash.reject { |k, _v| k == :errors }
     end
   end # class Repository::Base
 end
