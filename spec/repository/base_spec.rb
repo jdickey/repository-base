@@ -123,10 +123,10 @@ describe Repository::Base do
       describe 'with an #attributes method that returns' do
         it 'an Enumerable' do
           arg = 'q'
-          message = %(undefined method `attributes' for "#{arg}":String)
+          message = /undefined method .attributes. .*/
           expect { obj.add arg }.to raise_error NoMethodError, message
           entity = Struct.new(:attributes).new arg
-          message = %(undefined method `to_hash' for "#{arg}":String)
+          message = /undefined method .to_hash. .*/
           expect { obj.add entity }.to raise_error NoMethodError, message
         end
 
