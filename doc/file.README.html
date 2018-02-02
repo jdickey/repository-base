@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: README
+  
+    &mdash; Documentation by YARD 0.9.12
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "README";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'><h1>Repository::Base</h1>
+
+<p><a href="https://gitter.im/jdickey/repository-base?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Join the chat at https://gitter.im/jdickey/repository-base" /></a>
+<a href="http://badge.fury.io/rb/repository-base"><img src="https://badge.fury.io/rb/repository-base.svg" alt="Gem Version" /></a>
+<a href="https://codeclimate.com/github/jdickey/repository-base"><img src="https://codeclimate.com/github/jdickey/repository-base.png" alt="Code Climate" /></a>
+<a href="https://codeship.com/projects/63061"> <img src="https://codeship.com/projects/ae57fed0-969f-0132-1faa-76c54edd661d/status?branch=master" alt="Codeship Status for jdickey/repository-base" /></a>
+<a href="https://hakiri.io/github/jdickey/repository-base/master"><img src="https://hakiri.io/github/jdickey/repository-base/master.svg" alt="security" /></a>
+<a href="https://gemnasium.com/jdickey/repository-base"><img src="https://gemnasium.com/jdickey/repository-base.svg" alt="Dependency Status" /></a>
+<a href="http://inch-ci.org/github/jdickey/repository-base"><img src="http://inch-ci.org/github/jdickey/repository-base.svg?style=shields" alt="Inline docs" /></a></p>
+
+<p>This Gem supplies a class, <code>Repository::Base</code>, which can be used as a base class
+for Repositories in an application that uses the
+<a href="http://martinfowler.com/eaaCatalog/dataMapper.html">Data Mapper pattern</a>.
+As described by Fowler, Data Mapper “moves data between objects and a database
+while keeping them independent of each other and the mapper itself”.</p>
+
+<p>This was originally developed within the structure of an R&amp;D test-bed application,
+<a href="https://github.com/jdickey/new_poc"><code>new_poc</code></a>. That app has a fairly wide-ranging
+history; after browsing its README and
+<a href="https://github.com/jdickey/new_poc/commits">commit history</a>, you may find Pull
+Requests <a href="https://github.com/jdickey/new_poc/pull/153">#153</a> and
+<a href="https://github.com/jdickey/new_poc/pull/153">#200</a> informative as to the
+historical basis of this code.</p>
+
+<h2>Contents</h2>
+
+<ul>
+  <li><a href="#installation">Installation</a></li>
+  <li><a href="#usage">Usage</a>
+    <ul>
+      <li><a href="#important-legacy-notice">IMPORTANT LEGACY NOTICE</a></li>
+      <li><a href="#concepts">Concepts</a>
+        <ul>
+          <li><a href="#entities">Entities</a></li>
+          <li><a href="#entity-factories">Entity Factories</a></li>
+          <li><a href="#storeresult">StoreResult</a></li>
+          <li><a href="#repositorybase-instance-methods"><code>Repository::Base</code> Instance Methods</a></li>
+        </ul>
+      </li>
+      <li><a href="#more-details">More Details</a></li>
+    </ul>
+  </li>
+  <li><a href="#contributing">Contributing</a></li>
+</ul>
+
+<h2 id="installation">Installation</h2>
+
+<p>Add this line to your application’s Gemfile:</p>
+
+<p><code>ruby
+gem 'repository-base'
+</code></p>
+
+<p>And then execute:</p>
+
+<pre class="code ruby"><code class="ruby">$ bundle
+</code></pre>
+
+<p>Or install it yourself as:</p>
+
+<pre class="code ruby"><code class="ruby">$ gem install repository-base
+</code></pre>
+
+<h2 id="usage">Usage</h2>
+
+<h3 id="important-legacy-notice">IMPORTANT LEGACY NOTICE</h3>
+
+<p><strong><em>NOTICE!</em></strong> This Gem was created to support a solo, ad-hoc, early learning experience in what is now known as Clean Architecture. It was part of our first attempt to build an alternative to the ActiveRecord/ActiveModel scheme native to Ruby on Rails.</p>
+
+<p>As such, it has been superseded and far outshone by other, team efforts, notably <a href="http://rom-rb.org/">ROM</a> as used with <a href="http://hanamirb.org/">Hanami</a> and <a href="http://trailblazer.to/">Trailblazer</a>. You are <em>strongly advised</em> to examine these and other tools rather than to use this for <em>any</em> new development. The Gem is being republished as an 0.4.0 release purely for internal archaeological purposes.</p>
+
+<h3 id="concepts">Concepts</h3>
+
+<p>As mentioned at the top of this file, <code>Repository::Base</code> is intended to serve as
+the base class for your app’s Repositories. As with most Data Mapper
+implementations, it makes use of a database access object, or DAO, which you
+specify as one of the two parameters to <code>#initialize</code>. The other parameter is an
+“entity factory”, whose <code>.create</code> class method hands back an “entity” reflecting
+the content of an individual record in the underlying DAO.</p>
+
+<h4 id="entities">Entities</h4>
+
+<p>What is an “entity”? It’s a domain object in your application, with methods
+expressing the business logic applicable to the object represented by the underlying
+database record. This is distinct from an ActiveRecord-style <em>model</em>, in that
+more than one variation of entity may exist in your application for a given DAO.
+Most applications have Users, for example; some applications may have distinct
+variation of User <em>entities</em> (ordinary punters, admins, a “guest user” entity
+representing a user who has not authenticated as a more-privileged user, etc),
+that all share a common persistence layer (the underlying DAO) and an entity
+factory that <em>knows</em> how to create the correct type of entity for a given DAO
+record.</p>
+
+<p>An entity is uniquely identified by a <em>slug</em> rather than a numeric ID. Generally,
+a slug encodes textual, relatively SEO-friendly information corresponding to an
+individual record (the title of an article, the name of a user, etc) such that
+the corresponding record may be uniquely identified by the DAO. This is in
+preference to a “traditional” numeric record ID number; <code>Repository::Base</code> has
+no knowledge of nor direct support for numeric record IDs.</p>
+
+<h4 id="entity-factories">Entity Factories</h4>
+
+<p>Again, the entity factory, one of the parameters to this class’ <code>#initialize</code>
+method, is responsible for creating an entity from a DAO instance (record). The
+<code>Repository::Base</code> class knows nothing of the details of how that is done; it
+simply calls methods on the DAO and/or entity factory to accomplish the tasks
+encapsulated by its own individual methods.</p>
+
+<h4 id="storeresult">StoreResult</h4>
+
+<p>What is a <code>StoreResult</code>? It is a simple value object which communicates the
+result of a call to a method on the underlying DAO <em>as reported by the DAO</em>,
+with the following properties:</p>
+
+<ul>
+  <li><code>success?</code> (accessible as <code>result.success?</code> or as <code>result[:success?]</code>), has the value <code>true</code> after a successful operation or <code>false</code> after an unsuccessful one;</li>
+  <li><code>entity</code> (<code>result.entity</code> or <code>result[:entity]</code>) is the instance or enumeration of instances of your domain entity resulting from a successful operation. After an unsuccessful operation, this property will be <code>nil</code>;</li>
+  <li><code>errors</code> (<code>result.errors</code> or <code>result[:errors]</code>) is an Array-like object which is empty after a successful operation. After an unsuccessful operation, it will contain an Array of Hash instances, with each Hash having a key identifying the field or similar concept for which an individual error is being reported, and a value of the specific error message. For example, to report that a <code>:name</code> field was empty or blank, you might have a Hash of `{ name: ‘is empty or blank’ }. Your application domain logic should then understand how to deal with that convention.</li>
+</ul>
+
+<h4 id="repositorybase-instance-methods"><code>Repository::Base</code> Instance Methods</h4>
+
+<ul>
+  <li><code>#add</code> adds a new record to the underlying <em>DAO</em> (data-access object; see above) using the field values specified by the <em>entity</em> passed as the only parameter. Returns a <code>StoreResult</code> (see above) which indicates the success or failure of the operation. On success, the <code>StoreResult</code> contains a <em>new</em> entity that represents the state of the record added to the underlying DAO;</li>
+  <li><code>#all</code> returns a collection of entities matching all records as reported by the underlying DAO, with entities created by the appropriate entity factory;</li>
+  <li><code>#delete</code> instructs the DAO to delete the record corresponding to the specified <code>slug</code>. Returns a <code>StoreResult</code> with an entity corresponding to the deleted record on success, or with appropriate error message(s) on failure;</li>
+  <li><code>#find_by_slug</code> instructs the DAO to retrieve the record whose unique slug value matches the supplied parameter. On success, returns a <code>StoreResult</code> with an entity corresponding to the selected record; on failure, the <code>StoreResult</code> has an <code>entity</code> value of <code>nil</code> and appropriate error messages in <code>errors</code>;</li>
+  <li><code>update</code> causes the DAO to attempt to update the record identified by the passed-in slug using the passed-in field values. On success, returns a <code>StoreResult</code> whose <code>entity</code> value mirrors the updated DAO record; on failure, has appropriate error indications in the <code>StoreResult</code>’s <code>errors</code> property.</li>
+</ul>
+
+<h3 id="more-details">More Details</h3>
+
+<p>This Gem now has <a href="./doc/index.html">full documentation available</a>. (No, this isn’t 1990s-era <code>rdoc</code>.)</p>
+
+<p>This Gem was built with <strong>MRI Ruby 2.5.0</strong>. It <strong>is likely to</strong> work when rebuilt with any version after 2.0.0; however, as it makes use of <a href="http://ruby-doc.org//core-2.1.0/doc/syntax/methods_rdoc.html#label-Keyword+Arguments">keyword arguments</a> for various methods, it is <em>incompatible</em> with Ruby 1.9 or earlier.</p>
+
+<h2 id="contributing">Contributing</h2>
+
+<ol>
+  <li>Fork it ( https://github.com/jdickey/repository-base/fork )</li>
+  <li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
+  <li>Ensure that your changes are completely covered by <em>passing</em> specs, and comply with the <a href="https://github.com/bbatsov/ruby-style-guide">Ruby Style Guide</a> as enforced by <a href="https://github.com/bbatsov/rubocop">RuboCop</a>. To verify this, run <code>bundle exec rake</code>, noting and repairing any lapses in coverage or style violations;</li>
+  <li>Commit your changes (<code>git commit -a</code>). Please <em>do not</em> use a single-line commit message (<code>git commit -am "some message"</code>). A good commit message notes what was changed and why in sufficient detail that a relative newcomer to the code can understand your reasoning and your code;</li>
+  <li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
+  <li>Create a new Pull Request. Describe at some length the rationale for your new feature; your implementation strategy at a higher level than each individual commit message; anything future maintainers should be aware of; and so on. <em>If this is a modification to existing code, reference the open issue being addressed</em>.</li>
+  <li>Don’t be discouraged if the PR generates a discussion that leads to further refinement of your PR through additional commits. These should <em>generally</em> be discussed in comments on the PR itself; discussion in the Gitter room (see below) may also be useful;</li>
+  <li>If you’ve comments, questions, or just want to talk through your ideas, don’t hesitate to hang out in the project’s <a href="https://gitter.im/jdickey/repository-base">room on Gitter</a>. Ask away!</li>
+</ol>
+</div></div>
+
+      <div id="footer">
+  Generated on Sat Feb  3 03:00:17 2018 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.12 (ruby-2.5.0).
+</div>
+
+    </div>
+  </body>
+</html>

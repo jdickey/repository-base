@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
@@ -14,21 +15,23 @@ Gem::Specification.new do |spec|
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0")
-  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
+  # This Gem installs no executables of its own, and developer stubs for bin/setup will be overwritten
+  # spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
+  spec.metadata["yard.run"] = "yri" # use "yard" to build full HTML docs.
 
-  spec.add_dependency 'repository-support', '>= 0.0.3'
+  spec.add_dependency 'repository-support', '>= 0.1.1'
 
-  spec.add_development_dependency 'activemodel', '>= 3.2'
-  spec.add_development_dependency 'bundler', '~> 1.7'
-  spec.add_development_dependency 'rake', '~> 10.0'
-  spec.add_development_dependency 'rspec'
-  spec.add_development_dependency 'rubocop', '>= 0.28.0'
-  spec.add_development_dependency 'simplecov', '>= 0.9.1'
-  spec.add_development_dependency 'awesome_print'
-  # spec.add_development_dependency 'pry-byebug' # , :platforms => :mri
+  spec.add_development_dependency 'activemodel', '~> 4.2', '>= 4.2.10'
+  spec.add_development_dependency 'bundler', '~> 1.16'
+  spec.add_development_dependency 'rake', '~> 12.3', '>= 12.3.0'
+  spec.add_development_dependency 'rspec', '~> 3.7'
+  spec.add_development_dependency 'rubocop', '~> 0.52', '>= 0.52.1'
+  spec.add_development_dependency 'simplecov', '~> 0.15', '>= 0.15.1'
+  spec.add_development_dependency 'awesome_print', '>= 1.8.0'
+
   spec.add_development_dependency 'fancy-open-struct'
   spec.add_development_dependency 'yard'
-  spec.add_development_dependency 'kramdown' # for YARD Markdown docs
+  spec.add_development_dependency 'kramdown', '~> 1.16'
 end

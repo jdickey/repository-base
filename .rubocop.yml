@@ -1,0 +1,27 @@
+
+AllCops:
+  TargetRubyVersion: 2.5
+
+Metrics/BlockLength:
+  Max: 500
+  Include:
+    - 'spec/**/*_spec.rb'
+
+Metrics/ModuleLength:
+  Max: 500
+  Include:
+    - 'spec/**/*_spec.rb'
+
+Style/CommentedKeyword:
+  Enabled: false
+
+# This silences 'Missing top-level class documentation comment.', which we
+# particularly want to do on (initially-)generated files.
+Style/Documentation:
+  Enabled: false
+  Include:
+    - 'apps/**/*.rb'
+    - 'lib/**/*.rb'
+
+Rails/DynamicFindBy:
+  Enabled: false

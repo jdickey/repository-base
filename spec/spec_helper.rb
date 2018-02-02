@@ -1,6 +1,9 @@
+# frozen_string_literal: true
 
 require 'simplecov'
-SimpleCov.start 'rails'
+SimpleCov.start 'rails' do
+  add_filter '/gemset/'
+end
 
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 

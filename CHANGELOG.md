@@ -1,5 +1,14 @@
 # Change Log
 
+## [v0.4.0](https://github.com/jdickey/repository-base/tree/v0.3.0) (2018-02-03)
+
+[Full Changelog](https://github.com/jdickey/repository-base/compare/v0.2.0...v0.3.0)
+
+* Added [YARD-generated documentation](./doc/index.html)
+* Updated Ruby version to 2.5.0;
+* Updated developer dependencies to now-current versions;
+* Made trivial code changes to satisfy static-analysis tools. Tests still green.
+
 ## [v0.3.0](https://github.com/jdickey/repository-base/tree/v0.3.0) (2015-03-30)
 
 [Full Changelog](https://github.com/jdickey/repository-base/compare/v0.2.0...v0.3.0)

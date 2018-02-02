@@ -1,4 +1,4 @@
-# Repository::Base
+<h1>Repository::Base</h1>
 
 [![Join the chat at https://gitter.im/jdickey/repository-base](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jdickey/repository-base?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Gem Version](https://badge.fury.io/rb/repository-base.svg)](http://badge.fury.io/rb/repository-base)
@@ -22,6 +22,19 @@ Requests [#153](https://github.com/jdickey/new_poc/pull/153) and
 [#200](https://github.com/jdickey/new_poc/pull/153) informative as to the
 historical basis of this code.
 
+<h2>Contents</h2>
+
+- [Installation](#installation)
+- [Usage](#usage)
+  * [IMPORTANT LEGACY NOTICE](#important-legacy-notice)
+  * [Concepts](#concepts)
+    + [Entities](#entities)
+    + [Entity Factories](#entity-factories)
+    + [StoreResult](#storeresult)
+    + [`Repository::Base` Instance Methods](#repositorybase-instance-methods)
+  * [More Details](#more-details)
+- [Contributing](#contributing)
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -39,6 +52,12 @@ Or install it yourself as:
     $ gem install repository-base
 
 ## Usage
+
+### IMPORTANT LEGACY NOTICE
+
+**_NOTICE!_** This Gem was created to support a solo, ad-hoc, early learning experience in what is now known as Clean Architecture. It was part of our first attempt to build an alternative to the ActiveRecord/ActiveModel scheme native to Ruby on Rails.
+
+As such, it has been superseded and far outshone by other, team efforts, notably [ROM](http://rom-rb.org/) as used with [Hanami](http://hanamirb.org/) and [Trailblazer](http://trailblazer.to/). You are *strongly advised* to examine these and other tools rather than to use this for *any* new development. The Gem is being republished as an 0.4.0 release purely for internal archaeological purposes.
 
 ### Concepts
 
@@ -97,7 +116,9 @@ with the following properties:
 
 ### More Details
 
-Note that this Gem **requires Ruby 2.0**, with Ruby 2.1 or later recommended. As it makes use of [keyword arguments](http://ruby-doc.org//core-2.1.0/doc/syntax/methods_rdoc.html#label-Keyword+Arguments) for various methods, it is *incompatible* with Ruby 1.9 or earlier.
+This Gem now has [full documentation available](./doc/index.html). (No, this isn't 1990s-era `rdoc`.)
+
+This Gem was built with **MRI Ruby 2.5.0**. It **is likely to** work when rebuilt with any version after 2.0.0; however, as it makes use of [keyword arguments](http://ruby-doc.org//core-2.1.0/doc/syntax/methods_rdoc.html#label-Keyword+Arguments) for various methods, it is *incompatible* with Ruby 1.9 or earlier.
 
 ## Contributing
 

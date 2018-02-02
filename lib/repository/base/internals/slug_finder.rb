@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 require 'repository/support/result_builder'
 
@@ -53,7 +54,7 @@ module Repository
         # @see #find
         def errors_for_slug
           errors = ActiveModel::Errors.new dao
-          errors.add :slug,  "not found: '#{slug}'"
+          errors.add :slug, "not found: '#{slug}'"
           errors
         end
 

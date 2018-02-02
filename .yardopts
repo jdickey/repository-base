@@ -1,5 +1,1 @@
---markup-provider=kramdown
---markup=markdown
---verbose
---private
-
+--private --protected lib/repository/base.rb lib/repository/base/internals/internals.rb lib/repository/base/internals/record_deleter.rb lib/repository/base/internals/record_saver.rb lib/repository/base/internals/record_updater.rb lib/repository/base/internals/slug_finder.rb lib/repository/base/version.rb - CHANGELOG.md README.md

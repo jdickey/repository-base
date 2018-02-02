@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 require 'repository/base/version'
 
@@ -31,7 +32,8 @@ module Repository
     def initialize(factory:, dao:)
       validate_initializer_argument(:dao, dao)
       validate_initializer_argument(:factory, factory)
-      @factory, @dao = factory, dao
+      @factory = factory
+      @dao = dao
     end
 
     # Add a new record with attributes matching the specified entity to the
@@ -61,7 +63,7 @@ module Repository
     # @since 0.0.5
     def delete(identifier)
       RecordDeleter.new(identifier: identifier, dao: dao, factory: factory)
-        .delete
+                   .delete
     end
 
     # Find a record in the DAO and, on success, return a corresponding entity
@@ -101,7 +103,7 @@ module Repository
     # @return [boolean]
     def validate_initializer_argument(arg_sym, value)
       message = "the :#{arg_sym} argument must be a Class"
-      fail ArgumentError, message unless value.respond_to? :new
+      raise ArgumentError, message unless value.respond_to? :new
     end
 
     # supporting #add
