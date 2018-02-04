@@ -28,7 +28,7 @@ gem install kramdown -v 1.16.2 # for YARD Markdown doc generation
 gem install yard -v 0.9.12
 yard config --gem-install-yri
 gem install json -v 2.1.0
-gem install activemodel -v 4.2.10
+gem install activemodel -v 4.2.3
 gem install rake -v 12.3.0
 gem install rspec -v 3.7.0
 gem install rubocop -v 0.52.1
